@@ -1,0 +1,67 @@
+{
+  "Category": "VOD",
+  "Description": "video on demand on aws",
+  "Name": "_Ott_1080p_Avc_Aac_9x16_qvbr",
+  "Settings": {
+    "AdAvailOffset": 0,
+    "OutputGroups": [
+      {
+        "Name": "Apple HLS",
+        "Outputs": [
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_270x480pp_0.4Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_270x480pp_0.4Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_0.6Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_0.6Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_1.2Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_1.2Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_540x960pp_3.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_540x960pp_3.5Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_3.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_3.5Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_5.0Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_5.0Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_6.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_6.5Mbps_qvbr"
+          },
+          {
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_1080x1920pp_8.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_1080x1920pp_8.5Mbps_qvbr"
+          }
+        ],
+        "OutputGroupSettings": {
+          "Type": "HLS_GROUP_SETTINGS",
+          "HlsGroupSettings": {
+            "ManifestDurationFormat": "INTEGER",
+            "SegmentLength": 3,
+            "TimedMetadataId3Period": 10,
+            "CaptionLanguageSetting": "OMIT",
+            "TimedMetadataId3Frame": "PRIV",
+            "CodecSpecification": "RFC_4281",
+            "OutputSelection": "MANIFESTS_AND_SEGMENTS",
+            "ProgramDateTimePeriod": 600,
+            "MinSegmentLength": 0,
+            "DirectoryStructure": "SINGLE_DIRECTORY",
+            "ProgramDateTime": "EXCLUDE",
+            "SegmentControl": "SEGMENTED_FILES",
+            "ManifestCompression": "NONE",
+            "ClientCache": "ENABLED",
+            "StreamInfResolution": "INCLUDE"
+          }
+        }
+      }
+    ]
+  }
+}

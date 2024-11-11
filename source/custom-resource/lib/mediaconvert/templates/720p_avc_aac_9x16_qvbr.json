@@ -1,7 +1,7 @@
 {
   "Category": "VOD",
   "Description": "video on demand on aws",
-  "Name": "_Ott_720p_Avc_Aac_16x9",
+  "Name": "_Ott_720p_Avc_Aac_9x16_qvbr",
   "Settings": {
     "AdAvailOffset": 0,
     "OutputGroups": [
@@ -9,32 +9,32 @@
         "Name": "Apple HLS",
         "Outputs": [
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_480x270ppp_0.4Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_480x270ppp_400Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_270x480pp_0.4Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_270x480pp_0.4Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_640x360ppp_0.6Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_640x360ppp_600Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_0.6Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_0.6Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_640x360ppp_1.2Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_640x360ppp_1200Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_1.2Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_360x640pp_1.2Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_960x540ppp_3.5Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_960x540ppp_3500Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_540x960pp_3.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_540x960pp_3.5Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_3.5Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_3500Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_3.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_3.5Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_5.0Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_5000Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_5.0Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_5.0Mbps_qvbr"
           },
           {
-            "Preset": "System-Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_6.5Mbps",
-            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_16x9_1280x720ppp_6500Kbps"
+            "Preset": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_6.5Mbps_qvbr",
+            "NameModifier": "_Ott_Hls_Ts_Avc_Aac_9x16_720x1280pp_6.5Mbps_qvbr"
           }
         ],
         "OutputGroupSettings": {
