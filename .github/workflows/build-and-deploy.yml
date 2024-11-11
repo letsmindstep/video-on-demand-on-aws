@@ -1,0 +1,112 @@
+name: Build and Deploy VOD on AWS
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: 'AWS Region'
+        required: true
+        default: 'eu-west-1'
+      bucket_name:
+        description: 'S3 bucket name (without region suffix)'
+        required: true
+        default: 'mindstep-vod-on-aws-staging-bucket'
+      solution_name:
+        description: 'Solution name'
+        required: true
+        default: 'video-on-demand-on-aws'
+      version:
+        description: 'Version'
+        required: true
+        default: 'v1.0.0'
+      stack_name:
+        description: 'CloudFormation stack name'
+        required: true
+        default: 'vod-on-aws-stack-staging'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Run unit tests
+      run: |
+        cd ./deployment
+        chmod +x ./run-unit-tests.sh
+        ./run-unit-tests.sh
+
+    - name: Download MediaInfo binary
+      run: |
+        mkdir -p source/mediainfo/bin
+        curl -L https://mediaarea.net/download/binary/mediainfo/23.09/MediaInfo_Lambda_23.09.zip -o MediaInfo_Lambda.zip
+        unzip MediaInfo_Lambda.zip -d MediaInfo_Lambda
+        cp MediaInfo_Lambda/mediainfo source/mediainfo/bin/
+      shell: bash
+
+    - name: Build distribution packages
+      run: |
+        cd ./deployment
+        chmod +x ./build-s3-dist.sh
+        ./build-s3-dist.sh ${{ github.event.inputs.bucket_name }} ${{ github.event.inputs.solution_name }} ${{ github.event.inputs.version }}
+      env:
+        AWS_REGION: ${{ github.event.inputs.aws_region }}
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/DevDeploymentRole
+        aws-region: ${{ github.event.inputs.aws_region }}
+
+    - name: Ensure S3 bucket ownership
+      run: |
+        aws s3api head-bucket --bucket $BUCKET_NAME --expected-bucket-owner $AWS_ACCOUNT_ID
+      env:
+        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
+
+    - name: Upload distribution to S3
+      run: |
+        aws s3 sync ./deployment/regional-s3-assets/ s3://$BUCKET_NAME/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/
+        aws s3 sync ./deployment/global-s3-assets/ s3://$BUCKET_NAME/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/
+      env:
+        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
+        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
+
+    - name: Deploy CloudFormation stack
+      run: |
+        TEMPLATE_URL="https://$BUCKET_NAME.s3.${{ github.event.inputs.aws_region }}.amazonaws.com/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/video-on-demand-on-aws.template"
+        STACK_NAME=${{ github.event.inputs.stack_name }}
+        set +e
+        aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION
+        if [ $? -eq 0 ]; then
+          echo "Updating existing stack..."
+          aws cloudformation update-stack \
+            --stack-name $STACK_NAME \
+            --template-url $TEMPLATE_URL \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region $AWS_DEFAULT_REGION
+        else
+          echo "Creating new stack..."
+          aws cloudformation create-stack \
+            --stack-name $STACK_NAME \
+            --template-url $TEMPLATE_URL \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region $AWS_DEFAULT_REGION
+        fi
+      env:
+        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
+        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
