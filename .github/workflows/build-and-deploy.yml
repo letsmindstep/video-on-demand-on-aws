@@ -3,26 +3,10 @@ name: Build and Deploy VOD on AWS
 on:
   workflow_dispatch:
     inputs:
-      aws_region:
-        description: 'AWS Region'
-        required: true
-        default: 'eu-west-1'
-      bucket_name:
-        description: 'S3 bucket name (without region suffix)'
-        required: true
-        default: 'mindstep-vod-on-aws-staging-bucket'
-      solution_name:
-        description: 'Solution name'
-        required: true
-        default: 'video-on-demand-on-aws'
       version:
         description: 'Version'
         required: true
         default: 'v1.0.0'
-      stack_name:
-        description: 'CloudFormation stack name'
-        required: true
-        default: 'vod-on-aws-stack-staging'
       admin_email:
         description: 'Admin email address for SNS notifications'
         required: true
@@ -141,36 +125,36 @@ jobs:
       run: |
         cd ./deployment
         chmod +x ./build-s3-dist.sh
-        ./build-s3-dist.sh ${{ github.event.inputs.bucket_name }} ${{ github.event.inputs.solution_name }} ${{ github.event.inputs.version }}
+        ./build-s3-dist.sh mindstep-vod-on-aws-staging-bucket video-on-demand-on-aws ${{ github.event.inputs.version }}
       env:
-        AWS_REGION: ${{ github.event.inputs.aws_region }}
+        AWS_REGION: eu-west-1
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/DevDeploymentRole
-        aws-region: ${{ github.event.inputs.aws_region }}
+        aws-region: eu-west-1
 
     - name: Ensure S3 bucket ownership
       run: |
         aws s3api head-bucket --bucket $BUCKET_NAME --expected-bucket-owner $AWS_ACCOUNT_ID
       env:
-        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
+        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
         AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
+        AWS_DEFAULT_REGION: eu-west-1
 
     - name: Upload distribution to S3
       run: |
-        aws s3 sync ./deployment/regional-s3-assets/ s3://$BUCKET_NAME/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/
-        aws s3 sync ./deployment/global-s3-assets/ s3://$BUCKET_NAME/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/
+        aws s3 sync ./deployment/regional-s3-assets/ s3://$BUCKET_NAME/video-on-demand-on-aws/${{ github.event.inputs.version }}/
+        aws s3 sync ./deployment/global-s3-assets/ s3://$BUCKET_NAME/video-on-demand-on-aws/${{ github.event.inputs.version }}/
       env:
-        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
-        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
+        AWS_DEFAULT_REGION: eu-west-1
+        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
 
     - name: Deploy CloudFormation stack
       run: |
-        TEMPLATE_URL="https://$BUCKET_NAME.s3.${{ github.event.inputs.aws_region }}.amazonaws.com/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/video-on-demand-on-aws.template"
-        STACK_NAME=${{ github.event.inputs.stack_name }}
+        TEMPLATE_URL="https://$BUCKET_NAME.s3.eu-west-1.amazonaws.com/video-on-demand-on-aws/${{ github.event.inputs.version }}/video-on-demand-on-aws.template"
+        STACK_NAME=vod-on-aws-stack-staging
 
         PARAMS="ParameterKey=AdminEmail,ParameterValue='${{ github.event.inputs.admin_email }}' \
         ParameterKey=WorkflowTrigger,ParameterValue=${{ github.event.inputs.workflow_trigger }} \
@@ -201,6 +185,6 @@ jobs:
             --region $AWS_DEFAULT_REGION
         fi
       env:
-        BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
-        AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
+        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
+        AWS_DEFAULT_REGION: eu-west-1
       shell: bash
