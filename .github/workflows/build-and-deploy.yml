@@ -33,32 +33,32 @@ on:
         default: 'Yes'
         type: choice
         options:
-          - Yes
-          - No
+          - 'Yes'
+          - 'No'
       enable_media_package:
         description: 'Enable MediaPackage VOD (Yes or No)'
         required: false
         default: 'Yes'
         type: choice
         options:
-          - Yes
-          - No
+          - 'Yes'
+          - 'No'
       enable_sns:
         description: 'Enable SNS Notifications (Yes or No)'
         required: false
         default: 'Yes'
         type: choice
         options:
-          - Yes
-          - No
+          - 'Yes'
+          - 'No'
       enable_sqs:
         description: 'Enable SQS Notifications (Yes or No)'
         required: false
         default: 'Yes'
         type: choice
         options:
-          - Yes
-          - No
+          - 'Yes'
+          - 'No'
       accelerated_transcoding:
         description: 'Accelerated Transcoding (ENABLED, DISABLED, or PREFERRED)'
         required: false
