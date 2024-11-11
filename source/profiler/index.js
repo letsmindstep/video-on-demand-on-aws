@@ -1,16 +1,4 @@
-/*********************************************************************************************************************
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
- *                                                                                                                    *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
- *  with the License. A copy of the License is located at                                                             *
- *                                                                                                                    *
- *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
- *                                                                                                                    *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
- *  and limitations under the License.                                                                                *
- *********************************************************************************************************************/
-
+// index.js
 const { DynamoDBDocument } = require("@aws-sdk/lib-dynamodb");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const error = require('./lib/error.js');
@@ -24,88 +12,151 @@ exports.handler = async (event) => {
     }));
 
     try {
-        // Download DynamoDB data for the source file:
-        let params = {
-            TableName: process.env.DynamoDBTable,
-            Key: {
-                guid: event.guid
-            }
-        };
+        // Step 1: Fetch Event Data from DynamoDB
+        const eventData = await fetchEventData(dynamo, event);
 
-        let data = await dynamo.get(params);
+        // Step 2: Parse Media Info
+        const parsedEvent = parseMediaInfo(eventData);
 
-        Object.keys(data.Item).forEach(key => {
-            event[key] = data.Item[key];
-        });
+        // Step 3: Determine Video Orientation
+        const orientedEvent = determineOrientation(parsedEvent);
 
-        let mediaInfo = JSON.parse(event.srcMediainfo);
-        event.srcHeight = mediaInfo.video[0].height;
-        event.srcWidth = mediaInfo.video[0].width;
+        // Step 4: Select Encoding Profile
+        const profiledEvent = selectEncodingProfile(orientedEvent);
 
-        // Determine orientation
-        if (event.srcWidth >= event.srcHeight) {
-            event.orientation = 'landscape';
-            event.srcMaxDimension = event.srcWidth;
-            event.srcMinDimension = event.srcHeight;
-        } else {
-            event.orientation = 'portrait';
-            event.srcMaxDimension = event.srcHeight;
-            event.srcMinDimension = event.srcWidth;
-        }
+        // Step 5: Set Frame Capture Dimensions
+        const frameEvent = setFrameCaptureDimensions(profiledEvent);
 
-        // Define encoding profiles
-        const profiles = [
-            { 
-                landscape: { width: 3840, height: 2160, templateSuffix: '2160p_landscape' },
-                portrait: { width: 2160, height: 3840, templateSuffix: '2160p_portrait' }
-            },
-            { 
-                landscape: { width: 1920, height: 1080, templateSuffix: '1080p_landscape' },
-                portrait: { width: 1080, height: 1920, templateSuffix: '1080p_portrait' }
-            },
-            { 
-                landscape: { width: 1280, height: 720, templateSuffix: '720p_landscape' },
-                portrait: { width: 720, height: 1280, templateSuffix: '720p_portrait' }
-            }
-        ];
+        // Step 6: Select Job Template
+        const finalEvent = selectJobTemplate(frameEvent);
 
-        // Determine encoding profile by matching the srcMaxDimension to the nearest profile
-        let lastProfileDifference = Number.MAX_VALUE;
-        let encodeProfile;
+        console.log(`RESPONSE:: ${JSON.stringify(finalEvent, null, 2)}`);
+        return finalEvent;
 
-        profiles.forEach(profile => {
-            const profileDimension = profile[event.orientation].width;
-            const difference = Math.abs(event.srcMaxDimension - profileDimension);
-
-            if (difference < lastProfileDifference) {
-                lastProfileDifference = difference;
-                encodeProfile = profile[event.orientation];
-            }
-        });
-
-        event.encodingProfile = encodeProfile;
-
-        if (event.frameCapture) {
-            event.frameCaptureHeight = encodeProfile.height;
-            event.frameCaptureWidth = encodeProfile.width;
-        }
-
-        // Use the appropriate job template based on the encoding profile and orientation
-        if (!event.jobTemplate) {
-            // Generate the jobTemplate key
-            const jobTemplateKey = `jobTemplate_${encodeProfile.templateSuffix}`;
-            event.jobTemplate = event[jobTemplateKey];
-            console.log(`Chosen template:: ${event.jobTemplate}`);
-
-            event.isCustomTemplate = false;
-        } else {
-            event.isCustomTemplate = true;
-        }
     } catch (err) {
         await error.handler(event, err);
         throw err;
     }
+};
 
-    console.log(`RESPONSE:: ${JSON.stringify(event, null, 2)}`);
+// Function to fetch event data from DynamoDB
+async function fetchEventData(dynamo, event) {
+    const params = {
+        TableName: process.env.DynamoDBTable,
+        Key: {
+            guid: event.guid
+        }
+    };
+
+    const data = await dynamo.get(params);
+
+    // Return a new object combining event and data.Item
+    return { ...event, ...data.Item };
+}
+
+// Function to parse media info
+function parseMediaInfo(event) {
+    const mediaInfo = JSON.parse(event.srcMediainfo);
+    const srcHeight = mediaInfo.video[0].height;
+    const srcWidth = mediaInfo.video[0].width;
+
+    return {
+        ...event,
+        srcHeight,
+        srcWidth
+    };
+}
+
+// Function to determine video orientation
+function determineOrientation(event) {
+    const orientation = event.srcWidth >= event.srcHeight ? 'landscape' : 'portrait';
+    return {
+        ...event,
+        orientation
+    };
+}
+
+// Function to select encoding profile
+function selectEncodingProfile(event) {
+    const profiles = [
+        { 
+            landscape: { width: 3840, height: 2160, templateSuffix: '2160p_landscape' },
+            portrait: { width: 2160, height: 3840, templateSuffix: '2160p_portrait' }
+        },
+        { 
+            landscape: { width: 1920, height: 1080, templateSuffix: '1080p_landscape' },
+            portrait: { width: 1080, height: 1920, templateSuffix: '1080p_portrait' }
+        },
+        { 
+            landscape: { width: 1280, height: 720, templateSuffix: '720p_landscape' },
+            portrait: { width: 720, height: 1280, templateSuffix: '720p_portrait' }
+        }
+    ];
+
+    let closestProfile = null;
+    let smallestDifference = Number.MAX_VALUE;
+
+    profiles.forEach(profile => {
+        let difference;
+        if (event.orientation === 'landscape') {
+            difference = Math.abs(event.srcWidth - profile.landscape.width);
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
+                closestProfile = profile.landscape;
+            }
+        } else {
+            difference = Math.abs(event.srcHeight - profile.portrait.height);
+            if (difference < smallestDifference) {
+                smallestDifference = difference;
+                closestProfile = profile.portrait;
+            }
+        }
+    });
+
+    return {
+        ...event,
+        encodingProfile: closestProfile
+    };
+}
+
+// Function to set frame capture dimensions
+function setFrameCaptureDimensions(event) {
+    if (event.frameCapture) {
+        return {
+            ...event,
+            frameCaptureHeight: event.encodingProfile.height,
+            frameCaptureWidth: event.encodingProfile.width
+        };
+    }
     return event;
+}
+
+// Function to select job template
+function selectJobTemplate(event) {
+    if (!event.jobTemplate) {
+        const jobTemplateKey = `jobTemplate_${event.encodingProfile.templateSuffix}`;
+        const jobTemplate = event[jobTemplateKey];
+        console.log(`Chosen template:: ${jobTemplate}`);
+        return {
+            ...event,
+            jobTemplate,
+            isCustomTemplate: false
+        };
+    } else {
+        return {
+            ...event,
+            isCustomTemplate: true
+        };
+    }
+}
+
+// Export functions for testing
+module.exports = {
+    handler: exports.handler,
+    fetchEventData,
+    parseMediaInfo,
+    determineOrientation,
+    selectEncodingProfile,
+    setFrameCaptureDimensions,
+    selectJobTemplate
 };
