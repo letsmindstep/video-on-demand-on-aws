@@ -953,20 +953,35 @@ export class VideoOnDemand extends cdk.Stack {
         Destination: destination.bucketName,
         FrameCapture: `${cdk.Fn.conditionIf(conditionFrameCapture.logicalId, 'true', 'false')}`,
         ArchiveSource: glacier.valueAsString,
-        MediaConvert_Template_2160p: `${cdk.Fn.conditionIf(
+        MediaConvert_Template_2160p_landscape: `${cdk.Fn.conditionIf(
           conditionEnableMediaPackage.logicalId,
           `${cdk.Aws.STACK_NAME}_Ott_2160p_Avc_Aac_16x9_mvod_no_preset`,
           `${cdk.Aws.STACK_NAME}_Ott_2160p_Avc_Aac_16x9_qvbr_no_preset`
         )}`,
-        MediaConvert_Template_1080p: `${cdk.Fn.conditionIf(
+        MediaConvert_Template_1080p_landscape: `${cdk.Fn.conditionIf(
           conditionEnableMediaPackage.logicalId,
           `${cdk.Aws.STACK_NAME}_Ott_1080p_Avc_Aac_16x9_mvod_no_preset`,
           `${cdk.Aws.STACK_NAME}_Ott_1080p_Avc_Aac_16x9_qvbr_no_preset`
         )}`,
-        MediaConvert_Template_720p: `${cdk.Fn.conditionIf(
+        MediaConvert_Template_720p_landscape: `${cdk.Fn.conditionIf(
           conditionEnableMediaPackage.logicalId,
           `${cdk.Aws.STACK_NAME}_Ott_720p_Avc_Aac_16x9_mvod_no_preset`,
           `${cdk.Aws.STACK_NAME}_Ott_720p_Avc_Aac_16x9_qvbr_no_preset`
+        )}`,
+        MediaConvert_Template_2160p_portrait: `${cdk.Fn.conditionIf(
+          conditionEnableMediaPackage.logicalId,
+          `${cdk.Aws.STACK_NAME}_Ott_2160p_Avc_Aac_9x16_mvod_no_preset`,
+          `${cdk.Aws.STACK_NAME}_Ott_2160p_Avc_Aac_9x16_qvbr_no_preset`
+        )}`,
+        MediaConvert_Template_1080p_portrait: `${cdk.Fn.conditionIf(
+          conditionEnableMediaPackage.logicalId,
+          `${cdk.Aws.STACK_NAME}_Ott_1080p_Avc_Aac_9x16_mvod_no_preset`,
+          `${cdk.Aws.STACK_NAME}_Ott_1080p_Avc_Aac_9x16_qvbr_no_preset`
+        )}`,
+        MediaConvert_Template_720p_portrait: `${cdk.Fn.conditionIf(
+          conditionEnableMediaPackage.logicalId,
+          `${cdk.Aws.STACK_NAME}_Ott_720p_Avc_Aac_9x16_mvod_no_preset`,
+          `${cdk.Aws.STACK_NAME}_Ott_720p_Avc_Aac_9x16_qvbr_no_preset`
         )}`,
         CloudFront: distribution.cloudFrontWebDistribution.domainName,
         EnableMediaPackage: `${cdk.Fn.conditionIf(conditionEnableMediaPackage.logicalId, 'true', 'false')}`,
