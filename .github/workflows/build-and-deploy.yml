@@ -23,6 +23,67 @@ on:
         description: 'CloudFormation stack name'
         required: true
         default: 'vod-on-aws-stack-staging'
+      admin_email:
+        description: 'Admin email address for SNS notifications'
+        required: true
+      workflow_trigger:
+        description: 'Workflow Trigger (VideoFile or MetadataFile)'
+        required: false
+        default: 'MetadataFile'
+        type: choice
+        options:
+          - VideoFile
+          - MetadataFile
+      glacier:
+        description: 'Archive option'
+        required: false
+        default: 'DISABLED'
+        type: choice
+        options:
+          - DISABLED
+          - GLACIER
+          - DEEP_ARCHIVE
+      frame_capture:
+        description: 'Enable Frame Capture (Yes or No)'
+        required: false
+        default: 'Yes'
+        type: choice
+        options:
+          - Yes
+          - No
+      enable_media_package:
+        description: 'Enable MediaPackage VOD (Yes or No)'
+        required: false
+        default: 'Yes'
+        type: choice
+        options:
+          - Yes
+          - No
+      enable_sns:
+        description: 'Enable SNS Notifications (Yes or No)'
+        required: false
+        default: 'Yes'
+        type: choice
+        options:
+          - Yes
+          - No
+      enable_sqs:
+        description: 'Enable SQS Notifications (Yes or No)'
+        required: false
+        default: 'Yes'
+        type: choice
+        options:
+          - Yes
+          - No
+      accelerated_transcoding:
+        description: 'Accelerated Transcoding (ENABLED, DISABLED, or PREFERRED)'
+        required: false
+        default: 'PREFERRED'
+        type: choice
+        options:
+          - ENABLED
+          - DISABLED
+          - PREFERRED
 
 jobs:
   build-and-deploy:
@@ -110,23 +171,36 @@ jobs:
       run: |
         TEMPLATE_URL="https://$BUCKET_NAME.s3.${{ github.event.inputs.aws_region }}.amazonaws.com/${{ github.event.inputs.solution_name }}/${{ github.event.inputs.version }}/video-on-demand-on-aws.template"
         STACK_NAME=${{ github.event.inputs.stack_name }}
+
+        PARAMS="ParameterKey=AdminEmail,ParameterValue='${{ github.event.inputs.admin_email }}' \
+        ParameterKey=WorkflowTrigger,ParameterValue=${{ github.event.inputs.workflow_trigger }} \
+        ParameterKey=Glacier,ParameterValue=${{ github.event.inputs.glacier }} \
+        ParameterKey=FrameCapture,ParameterValue=${{ github.event.inputs.frame_capture }} \
+        ParameterKey=EnableMediaPackage,ParameterValue=${{ github.event.inputs.enable_media_package }} \
+        ParameterKey=EnableSns,ParameterValue=${{ github.event.inputs.enable_sns }} \
+        ParameterKey=EnableSqs,ParameterValue=${{ github.event.inputs.enable_sqs }} \
+        ParameterKey=AcceleratedTranscoding,ParameterValue=${{ github.event.inputs.accelerated_transcoding }}"
+    
         set +e
         aws cloudformation describe-stacks --stack-name $STACK_NAME --region $AWS_DEFAULT_REGION
         if [ $? -eq 0 ]; then
-          echo "Updating existing stack..."
-          aws cloudformation update-stack \
+            echo "Updating existing stack..."
+            aws cloudformation update-stack \
             --stack-name $STACK_NAME \
             --template-url $TEMPLATE_URL \
             --capabilities CAPABILITY_NAMED_IAM \
+            --parameters $PARAMS \
             --region $AWS_DEFAULT_REGION
         else
-          echo "Creating new stack..."
-          aws cloudformation create-stack \
+            echo "Creating new stack..."
+            aws cloudformation create-stack \
             --stack-name $STACK_NAME \
             --template-url $TEMPLATE_URL \
             --capabilities CAPABILITY_NAMED_IAM \
+            --parameters $PARAMS \
             --region $AWS_DEFAULT_REGION
         fi
       env:
         BUCKET_NAME: ${{ github.event.inputs.bucket_name }}-${{ github.event.inputs.aws_region }}
         AWS_DEFAULT_REGION: ${{ github.event.inputs.aws_region }}
+      shell: bash
