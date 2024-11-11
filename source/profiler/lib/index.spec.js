@@ -31,39 +31,72 @@ describe('#PROFILER::', () => {
         jobTemplate: 'customTemplate'
     };
 
-    const data = {
+    // Test data for a landscape video
+    const data_landscape = {
         Item: {
             guid: '12345678',
             srcMediainfo: '{ "video": [{ "height": 720, "width": 1280 }] }',
-            jobTemplate_2160p: 'tmpl1',
-            jobTemplate_1080p: 'tmpl2',
-            jobTemplate_720p: 'tmpl3',
+            jobTemplate_2160p_landscape: 'tmpl1_landscape',
+            jobTemplate_1080p_landscape: 'tmpl2_landscape',
+            jobTemplate_720p_landscape: 'tmpl3_landscape',
+            jobTemplate_2160p_portrait: 'tmpl1_portrait',
+            jobTemplate_1080p_portrait: 'tmpl2_portrait',
+            jobTemplate_720p_portrait: 'tmpl3_portrait',
             frameCapture: true
         }
     };
+
+    // Test data for a portrait video
+    const data_portrait = {
+        Item: {
+            guid: '12345678',
+            srcMediainfo: '{ "video": [{ "height": 1280, "width": 720 }] }',
+            jobTemplate_2160p_landscape: 'tmpl1_landscape',
+            jobTemplate_1080p_landscape: 'tmpl2_landscape',
+            jobTemplate_720p_landscape: 'tmpl3_landscape',
+            jobTemplate_2160p_portrait: 'tmpl1_portrait',
+            jobTemplate_1080p_portrait: 'tmpl2_portrait',
+            jobTemplate_720p_portrait: 'tmpl3_portrait',
+            frameCapture: true
+        }
+    };
+
     const dynamoDBDocumentClientMock = mockClient(DynamoDBDocumentClient);
     const lambdaClientMock = mockClient(LambdaClient);
 
     afterEach(() => dynamoDBDocumentClientMock.reset());
 
-    it('should return "SUCCESS" on profile set', async () => {
-        dynamoDBDocumentClientMock.on(GetCommand).resolves(data);
+    it('should return "SUCCESS" on profile set for landscape video', async () => {
+        dynamoDBDocumentClientMock.on(GetCommand).resolves(data_landscape);
 
         const response = await lambda.handler(_event);
-        expect(response.jobTemplate).to.equal('tmpl3');
+        expect(response.jobTemplate).to.equal('tmpl3_landscape');
         expect(response.frameCaptureHeight).to.equal(720);
         expect(response.frameCaptureWidth).to.equal(1280);
         expect(response.isCustomTemplate).to.be.false;
+        expect(response.orientation).to.equal('landscape');
+    });
+
+    it('should return "SUCCESS" on profile set for portrait video', async () => {
+        dynamoDBDocumentClientMock.on(GetCommand).resolves(data_portrait);
+
+        const response = await lambda.handler(_event);
+        expect(response.jobTemplate).to.equal('tmpl3_portrait');
+        expect(response.frameCaptureHeight).to.equal(1280);
+        expect(response.frameCaptureWidth).to.equal(720);
+        expect(response.isCustomTemplate).to.be.false;
+        expect(response.orientation).to.equal('portrait');
     });
 
     it('should return "SUCCESS" using a custom template', async () => {
-        dynamoDBDocumentClientMock.on(GetCommand).resolves(data);
+        dynamoDBDocumentClientMock.on(GetCommand).resolves(data_landscape);
 
         const response = await lambda.handler(_tmpl_event);
         expect(response.jobTemplate).to.equal('customTemplate');
         expect(response.frameCaptureHeight).to.equal(720);
         expect(response.frameCaptureWidth).to.equal(1280);
         expect(response.isCustomTemplate).to.be.true;
+        expect(response.orientation).to.equal('landscape');
     });
 
     it('should return "DB ERROR" when db get fails', async () => {

@@ -2400,7 +2400,7 @@ exports[`VideoOnDemand Stack Test 1`] = `
               ],
             },
             InputRotate: DEGREE_0,
-            MediaConvert_Template_1080p: {
+            MediaConvert_Template_1080p_landscape: {
               Fn::If: [
                 EnableMediaPackageCondition,
                 {
@@ -2427,7 +2427,34 @@ exports[`VideoOnDemand Stack Test 1`] = `
                 },
               ],
             },
-            MediaConvert_Template_2160p: {
+            MediaConvert_Template_1080p_portrait: {
+              Fn::If: [
+                EnableMediaPackageCondition,
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_1080p_Avc_Aac_9x16_mvod_no_preset,
+                    ],
+                  ],
+                },
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_1080p_Avc_Aac_9x16_qvbr_no_preset,
+                    ],
+                  ],
+                },
+              ],
+            },
+            MediaConvert_Template_2160p_landscape: {
               Fn::If: [
                 EnableMediaPackageCondition,
                 {
@@ -2454,7 +2481,34 @@ exports[`VideoOnDemand Stack Test 1`] = `
                 },
               ],
             },
-            MediaConvert_Template_720p: {
+            MediaConvert_Template_2160p_portrait: {
+              Fn::If: [
+                EnableMediaPackageCondition,
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_2160p_Avc_Aac_9x16_mvod_no_preset,
+                    ],
+                  ],
+                },
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_2160p_Avc_Aac_9x16_qvbr_no_preset,
+                    ],
+                  ],
+                },
+              ],
+            },
+            MediaConvert_Template_720p_landscape: {
               Fn::If: [
                 EnableMediaPackageCondition,
                 {
@@ -2476,6 +2530,33 @@ exports[`VideoOnDemand Stack Test 1`] = `
                         Ref: AWS::StackName,
                       },
                       _Ott_720p_Avc_Aac_16x9_qvbr_no_preset,
+                    ],
+                  ],
+                },
+              ],
+            },
+            MediaConvert_Template_720p_portrait: {
+              Fn::If: [
+                EnableMediaPackageCondition,
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_720p_Avc_Aac_9x16_mvod_no_preset,
+                    ],
+                  ],
+                },
+                {
+                  Fn::Join: [
+                    ,
+                    [
+                      {
+                        Ref: AWS::StackName,
+                      },
+                      _Ott_720p_Avc_Aac_9x16_qvbr_no_preset,
                     ],
                   ],
                 },
