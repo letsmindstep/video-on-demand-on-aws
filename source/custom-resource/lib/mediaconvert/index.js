@@ -18,6 +18,7 @@ const CATEGORY = 'VOD';
 const DESCRIPTION = 'video on demand on aws';
 
 const qvbrPresets = [
+    // Original Landscape Presets
     {
         name: '_Mp4_Avc_Aac_16x9_1280x720p_4.5Mbps_qvbr',
         file: './lib/mediaconvert/presets/_Mp4_Avc_Aac_16x9_1280x720p_4.5Mbps_qvbr.json'
@@ -93,11 +94,89 @@ const qvbrPresets = [
     {
         name: '_Ott_Hls_Ts_Avc_Aac_16x9_960x540p_3.5Mbps_qvbr',
         file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_16x9_960x540p_3.5Mbps_qvbr.json'
+    },
+
+    // New Portrait Presets
+    {
+        name: '_Mp4_Avc_Aac_9x16_720x1280p_4.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Mp4_Avc_Aac_9x16_720x1280p_4.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Mp4_Avc_Aac_9x16_1080x1920p_6Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Mp4_Avc_Aac_9x16_1080x1920p_6Mbps_qvbr.json'
+    },
+    {
+        name: '_Mp4_Hevc_Aac_9x16_2160x3840p_20Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Mp4_Hevc_Aac_9x16_2160x3840p_20Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_720x1280p_6.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_720x1280p_6.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_270x480p_0.4Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_270x480p_0.4Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_1080x1920p_8.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_1080x1920p_8.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_360x640p_0.6Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_360x640p_0.6Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_720x1280p_3.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_720x1280p_3.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_360x640p_1.2Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_360x640p_1.2Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_720x1280p_5.0Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_720x1280p_5.0Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Dash_Mp4_Avc_9x16_540x960p_3.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Dash_Mp4_Avc_9x16_540x960p_3.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_3.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_3.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_270x480p_0.4Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_270x480p_0.4Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_5.0Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_5.0Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_360x640p_0.6Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_360x640p_0.6Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_6.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_720x1280p_6.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_360x640p_1.2Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_360x640p_1.2Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_1080x1920p_8.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_1080x1920p_8.5Mbps_qvbr.json'
+    },
+    {
+        name: '_Ott_Hls_Ts_Avc_Aac_9x16_540x960p_3.5Mbps_qvbr',
+        file: './lib/mediaconvert/presets/_Ott_Hls_Ts_Avc_Aac_9x16_540x960p_3.5Mbps_qvbr.json'
     }
 ];
 
-// templates from v5.1.0 and older
 const qvbrTemplates = [
+    // Original Landscape Templates
     {
         name: '_Ott_2160p_Avc_Aac_16x9_qvbr',
         file: './lib/mediaconvert/templates/2160p_avc_aac_16x9_qvbr.json'
@@ -109,10 +188,25 @@ const qvbrTemplates = [
     {
         name: '_Ott_720p_Avc_Aac_16x9_qvbr',
         file: './lib/mediaconvert/templates/720p_avc_aac_16x9_qvbr.json'
+    },
+
+    // New Portrait Templates
+    {
+        name: '_Ott_2160p_Avc_Aac_9x16_qvbr',
+        file: './lib/mediaconvert/templates/2160p_avc_aac_9x16_qvbr.json'
+    },
+    {
+        name: '_Ott_1080p_Avc_Aac_9x16_qvbr',
+        file: './lib/mediaconvert/templates/1080p_avc_aac_9x16_qvbr.json'
+    },
+    {
+        name: '_Ott_720p_Avc_Aac_9x16_qvbr',
+        file: './lib/mediaconvert/templates/720p_avc_aac_9x16_qvbr.json'
     }
 ];
 
 const mediaPackageTemplates = [
+    // Original Landscape Templates
     {
         name: '_Ott_2160p_Avc_Aac_16x9_mvod',
         file: './lib/mediaconvert/templates/2160p_avc_aac_16x9_mvod.json'
@@ -124,11 +218,25 @@ const mediaPackageTemplates = [
     {
         name: '_Ott_720p_Avc_Aac_16x9_mvod',
         file: './lib/mediaconvert/templates/720p_avc_aac_16x9_mvod.json'
+    },
+
+    // New Portrait Templates
+    {
+        name: '_Ott_2160p_Avc_Aac_9x16_mvod',
+        file: './lib/mediaconvert/templates/2160p_avc_aac_9x16_mvod.json'
+    },
+    {
+        name: '_Ott_1080p_Avc_Aac_9x16_mvod',
+        file: './lib/mediaconvert/templates/1080p_avc_aac_9x16_mvod.json'
+    },
+    {
+        name: '_Ott_720p_Avc_Aac_9x16_mvod',
+        file: './lib/mediaconvert/templates/720p_avc_aac_9x16_mvod.json'
     }
 ];
 
-// updated templates for v5.2.0 that don't use presets
 const qvbrTemplatesNoPreset = [
+    // Original Landscape Templates
     {
         name: '_Ott_2160p_Avc_Aac_16x9_qvbr_no_preset',
         file: './lib/mediaconvert/templates/2160p_avc_aac_16x9_qvbr_no_preset.json'
@@ -140,10 +248,25 @@ const qvbrTemplatesNoPreset = [
     {
         name: '_Ott_720p_Avc_Aac_16x9_qvbr_no_preset',
         file: './lib/mediaconvert/templates/720p_avc_aac_16x9_qvbr_no_preset.json'
+    },
+
+    // New Portrait Templates
+    {
+        name: '_Ott_2160p_Avc_Aac_9x16_qvbr_no_preset',
+        file: './lib/mediaconvert/templates/2160p_avc_aac_9x16_qvbr_no_preset.json'
+    },
+    {
+        name: '_Ott_1080p_Avc_Aac_9x16_qvbr_no_preset',
+        file: './lib/mediaconvert/templates/1080p_avc_aac_9x16_qvbr_no_preset.json'
+    },
+    {
+        name: '_Ott_720p_Avc_Aac_9x16_qvbr_no_preset',
+        file: './lib/mediaconvert/templates/720p_avc_aac_9x16_qvbr_no_preset.json'
     }
 ];
 
 const mediaPackageTemplatesNoPreset = [
+    // Original Landscape Templates
     {
         name: '_Ott_2160p_Avc_Aac_16x9_mvod_no_preset',
         file: './lib/mediaconvert/templates/2160p_avc_aac_16x9_mvod_no_preset.json'
@@ -155,8 +278,23 @@ const mediaPackageTemplatesNoPreset = [
     {
         name: '_Ott_720p_Avc_Aac_16x9_mvod_no_preset',
         file: './lib/mediaconvert/templates/720p_avc_aac_16x9_mvod_no_preset.json'
+    },
+
+    // New Portrait Templates
+    {
+        name: '_Ott_2160p_Avc_Aac_9x16_mvod_no_preset',
+        file: './lib/mediaconvert/templates/2160p_avc_aac_9x16_mvod_no_preset.json'
+    },
+    {
+        name: '_Ott_1080p_Avc_Aac_9x16_mvod_no_preset',
+        file: './lib/mediaconvert/templates/1080p_avc_aac_9x16_mvod_no_preset.json'
+    },
+    {
+        name: '_Ott_720p_Avc_Aac_9x16_mvod_no_preset',
+        file: './lib/mediaconvert/templates/720p_avc_aac_9x16_mvod_no_preset.json'
     }
 ];
+
 
 // Get the Account regional MediaConvert endpoint for making API calls
 const GetEndpoints = async () => {
