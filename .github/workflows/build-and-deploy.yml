@@ -57,7 +57,7 @@ jobs:
     - name: Download MediaInfo binary
       run: |
         mkdir -p source/mediainfo/bin
-        curl -L https://mediaarea.net/download/binary/mediainfo/23.09/MediaInfo_Lambda_23.09.zip -o MediaInfo_Lambda.zip
+        curl -L -o MediaInfo_Lambda.zip https://github.com/MediaArea/MediaInfo/releases/download/v23.09/MediaInfo_Lambda_23.09.zip
         unzip MediaInfo_Lambda.zip -d MediaInfo_Lambda
         cp MediaInfo_Lambda/mediainfo source/mediainfo/bin/
       shell: bash
