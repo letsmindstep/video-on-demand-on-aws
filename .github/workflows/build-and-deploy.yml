@@ -54,12 +54,22 @@ jobs:
         chmod +x ./run-unit-tests.sh
         ./run-unit-tests.sh
 
-    - name: Download MediaInfo binary
+    - name: Install build dependencies
       run: |
-        mkdir -p source/mediainfo/bin
-        curl -L -o MediaInfo_Lambda.zip https://github.com/MediaArea/MediaInfo/releases/download/v23.09/MediaInfo_Lambda_23.09.zip
-        unzip MediaInfo_Lambda.zip -d MediaInfo_Lambda
-        cp MediaInfo_Lambda/mediainfo source/mediainfo/bin/
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf automake libtool pkg-config libcurl4-openssl-dev xz-utils wget
+      shell: bash
+  
+    - name: Build MediaInfo from source
+      run: |
+        cd $GITHUB_WORKSPACE
+        wget https://mediaarea.net/download/binary/mediainfo/20.09/MediaInfo_CLI_20.09_GNU_FromSource.tar.xz
+        tar xvf MediaInfo_CLI_20.09_GNU_FromSource.tar.xz
+        cd MediaInfo_CLI_GNU_FromSource/
+        chmod +x CLI_Compile.sh
+        ./CLI_Compile.sh --with-libcurl
+        mkdir -p $GITHUB_WORKSPACE/source/mediainfo/bin
+        cp MediaInfo/Project/GNU/CLI/mediainfo $GITHUB_WORKSPACE/source/mediainfo/bin/
       shell: bash
 
     - name: Build distribution packages
