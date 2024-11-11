@@ -42,46 +42,59 @@ exports.handler = async (event) => {
         event.srcHeight = mediaInfo.video[0].height;
         event.srcWidth = mediaInfo.video[0].width;
 
-        // Determine encoding by matching the srcHeight to the nearest profile.
-        const profiles = [2160, 1080, 720];
-        let lastProfile;
+        // Determine orientation
+        if (event.srcWidth >= event.srcHeight) {
+            event.orientation = 'landscape';
+            event.srcMaxDimension = event.srcWidth;
+            event.srcMinDimension = event.srcHeight;
+        } else {
+            event.orientation = 'portrait';
+            event.srcMaxDimension = event.srcHeight;
+            event.srcMinDimension = event.srcWidth;
+        }
+
+        // Define encoding profiles
+        const profiles = [
+            { 
+                landscape: { width: 3840, height: 2160, templateSuffix: '2160p_landscape' },
+                portrait: { width: 2160, height: 3840, templateSuffix: '2160p_portrait' }
+            },
+            { 
+                landscape: { width: 1920, height: 1080, templateSuffix: '1080p_landscape' },
+                portrait: { width: 1080, height: 1920, templateSuffix: '1080p_portrait' }
+            },
+            { 
+                landscape: { width: 1280, height: 720, templateSuffix: '720p_landscape' },
+                portrait: { width: 720, height: 1280, templateSuffix: '720p_portrait' }
+            }
+        ];
+
+        // Determine encoding profile by matching the srcMaxDimension to the nearest profile
+        let lastProfileDifference = Number.MAX_VALUE;
         let encodeProfile;
 
-        profiles.some(p => {
-            let profile = Math.abs(event.srcHeight - p);
-            if (profile > lastProfile) {
-                return true;
-            }
+        profiles.forEach(profile => {
+            const profileDimension = profile[event.orientation].width;
+            const difference = Math.abs(event.srcMaxDimension - profileDimension);
 
-            encodeProfile = p;
-            lastProfile = profile;
+            if (difference < lastProfileDifference) {
+                lastProfileDifference = difference;
+                encodeProfile = profile[event.orientation];
+            }
         });
 
         event.encodingProfile = encodeProfile;
 
         if (event.frameCapture) {
-            // Match Height x Width with the encoding profile.
-            const ratios = {
-                '2160': 3840,
-                '1080': 1920,
-                '720': 1280
-            };
-
-            event.frameCaptureHeight = encodeProfile;
-            event.frameCaptureWidth = ratios[encodeProfile];
+            event.frameCaptureHeight = encodeProfile.height;
+            event.frameCaptureWidth = encodeProfile.width;
         }
 
-        // Update:: added support to pass in a custom encoding Template instead of using the
-        // solution defaults
+        // Use the appropriate job template based on the encoding profile and orientation
         if (!event.jobTemplate) {
-            // Match the jobTemplate to the encoding Profile.
-            const jobTemplates = {
-                '2160': event.jobTemplate_2160p,
-                '1080': event.jobTemplate_1080p,
-                '720': event.jobTemplate_720p
-            };
-
-            event.jobTemplate = jobTemplates[encodeProfile];
+            // Generate the jobTemplate key
+            const jobTemplateKey = `jobTemplate_${encodeProfile.templateSuffix}`;
+            event.jobTemplate = event[jobTemplateKey];
             console.log(`Chosen template:: ${event.jobTemplate}`);
 
             event.isCustomTemplate = false;
