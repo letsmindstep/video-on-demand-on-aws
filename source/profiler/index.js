@@ -113,11 +113,18 @@ function selectEncodingProfile(event) {
         }
     });
 
+    // Extract resolution from templateSuffix
+    const resolutionMatch = closestProfile.templateSuffix.match(/(\d+)p/);
+    const resolution = resolutionMatch ? parseInt(resolutionMatch[1]) : null;
+
     return {
         ...event,
-        encodingProfile: closestProfile
+        encodingProfile: closestProfile,
+        resolution,
+        orientation: event.orientation
     };
 }
+
 
 // Function to set frame capture dimensions
 function setFrameCaptureDimensions(event) {
