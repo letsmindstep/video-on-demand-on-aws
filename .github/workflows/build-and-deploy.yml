@@ -3,6 +3,14 @@ name: Build and Deploy VOD on AWS
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'nonprod'
+        type: choice
+        options:
+          - nonprod
+          - prod
       version:
         description: 'Version'
         required: true
@@ -72,7 +80,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: nonprod
+    environment: ${{ github.event.inputs.environment }}
 
     permissions:
       id-token: write
@@ -125,7 +133,7 @@ jobs:
       run: |
         cd ./deployment
         chmod +x ./build-s3-dist.sh
-        ./build-s3-dist.sh mindstep-vod-on-aws-staging-bucket video-on-demand-on-aws ${{ github.event.inputs.version }}
+        ./build-s3-dist.sh mindstep-vod-on-aws-${{ github.event.inputs.environment }}-bucket video-on-demand-on-aws ${{ github.event.inputs.version }}
       env:
         AWS_REGION: eu-west-1
 
@@ -139,7 +147,7 @@ jobs:
       run: |
         aws s3api head-bucket --bucket $BUCKET_NAME --expected-bucket-owner $AWS_ACCOUNT_ID
       env:
-        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
+        BUCKET_NAME: mindstep-vod-on-aws-${{ github.event.inputs.environment }}-bucket-eu-west-1
         AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         AWS_DEFAULT_REGION: eu-west-1
 
@@ -149,12 +157,12 @@ jobs:
         aws s3 sync ./deployment/global-s3-assets/ s3://$BUCKET_NAME/video-on-demand-on-aws/${{ github.event.inputs.version }}/
       env:
         AWS_DEFAULT_REGION: eu-west-1
-        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
+        BUCKET_NAME: mindstep-vod-on-aws-${{ github.event.inputs.environment }}-bucket-eu-west-1
 
     - name: Deploy CloudFormation stack
       run: |
         TEMPLATE_URL="https://$BUCKET_NAME.s3.eu-west-1.amazonaws.com/video-on-demand-on-aws/${{ github.event.inputs.version }}/video-on-demand-on-aws.template"
-        STACK_NAME=vod-on-aws-stack-staging
+        STACK_NAME=vod-on-aws-stack-${{ github.event.inputs.environment }}
 
         PARAMS="ParameterKey=AdminEmail,ParameterValue='${{ github.event.inputs.admin_email }}' \
         ParameterKey=WorkflowTrigger,ParameterValue=${{ github.event.inputs.workflow_trigger }} \
@@ -185,6 +193,6 @@ jobs:
             --region $AWS_DEFAULT_REGION
         fi
       env:
-        BUCKET_NAME: mindstep-vod-on-aws-staging-bucket-eu-west-1
+        BUCKET_NAME: mindstep-vod-on-aws-${{ github.event.inputs.environment }}-bucket-eu-west-1
         AWS_DEFAULT_REGION: eu-west-1
       shell: bash
